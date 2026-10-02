@@ -228,8 +228,66 @@ function showChatArrivalAlert() {
   }, 3200);
 }
 
+// ---- Layout de celular (V22) ----------------------------------------------
+// 'portrait'  = celular em pé: vídeo no topo, chat embaixo, tela travada.
+// 'landscape' = celular deitado: vídeo ocupando a tela; chat opcional ao lado.
+// 'desktop'   = qualquer outra tela (layout anterior).
+// Usa a orientação do aparelho (e não a janela) porque o teclado encolhe a
+// janela e faria um celular em pé parecer deitado.
+function deviceIsLandscape() {
+  const type = screen.orientation?.type;
+  if (type) return type.startsWith('landscape');
+  if (typeof window.orientation === 'number') return Math.abs(window.orientation) === 90;
+  return innerWidth > innerHeight;
+}
+function layoutMode() {
+  const isPhone = Math.min(screen.width, screen.height) <= 600;
+  if (!isPhone) return 'desktop';
+  return deviceIsLandscape() ? 'landscape' : 'portrait';
+}
+let viewportBaseline = 0;
+function updateAppViewport() {
+  const vv = window.visualViewport;
+  const height = Math.round(vv?.height || innerHeight);
+  const root = document.documentElement.style;
+  root.setProperty('--app-h', `${height}px`);
+  root.setProperty('--app-top', `${Math.round(vv?.offsetTop || 0)}px`);
+  viewportBaseline = Math.max(viewportBaseline, height);
+  const keyboardOpen = layoutMode() !== 'desktop' && viewportBaseline - height > 120;
+  document.body.classList.toggle('kb-open', keyboardOpen);
+}
+function syncChatSideClass() {
+  document.body.classList.toggle('chat-side-open', layoutMode() === 'landscape' && els.chatPanel.classList.contains('open'));
+}
+function applyLayoutMode() {
+  const mode = layoutMode();
+  const previous = document.body.dataset.layout;
+  document.body.dataset.layout = mode;
+  if (previous !== mode) {
+    if (mode === 'portrait') els.chatPanel.classList.add('open'); // chat sempre à vista
+    else if (mode === 'landscape') els.chatPanel.classList.remove('open'); // chat só se a pessoa abrir
+    if (mode !== 'portrait' && document.body.classList.contains('cinema-mode')) exitCinemaMode();
+  }
+  syncChatSideClass();
+  updateAppViewport();
+}
+function resetViewportBaseline() { viewportBaseline = 0; setTimeout(applyLayoutMode, 350); }
+window.addEventListener('orientationchange', resetViewportBaseline);
+screen.orientation?.addEventListener?.('change', resetViewportBaseline);
+window.addEventListener('resize', () => { applyLayoutMode(); });
+window.visualViewport?.addEventListener('resize', updateAppViewport);
+window.visualViewport?.addEventListener('scroll', updateAppViewport);
+
+// Controles do vídeo no modo deitado: aparecem ao tocar no vídeo e somem sozinhos.
+let controlsTimer = null;
+function pokeControls(keep = false) {
+  document.body.classList.add('show-controls');
+  clearTimeout(controlsTimer);
+  controlsTimer = setTimeout(() => document.body.classList.remove('show-controls'), keep ? 6000 : 3500);
+}
+
 function chatIsOpenOnThisScreen() {
-  return !matchMedia('(max-width: 720px)').matches || els.chatPanel.classList.contains('open');
+  return layoutMode() === 'desktop' || els.chatPanel.classList.contains('open');
 }
 
 function clearUnreadChat() {
@@ -1053,6 +1111,14 @@ async function toggleFullscreen() {
     await exitFullscreenView();
     return;
   }
+  if (layoutMode() === 'landscape') {
+    try {
+      const root = document.documentElement;
+      await (root.requestFullscreen || root.webkitRequestFullscreen)?.call(root);
+    } catch { /* o layout deitado já ocupa a tela inteira */ }
+    updateFullscreenButton();
+    return;
+  }
   // A raiz inteira entra em fullscreen sempre que o navegador permitir. Assim
   // o chat continua dentro do elemento em tela cheia, por cima do vídeo, em
   // vez de sumir ao tentar deslizar. Onde a API não existir, fica o fallback
@@ -1069,6 +1135,7 @@ async function toggleFullscreen() {
   } catch {
     // O fallback permanece visualmente em tela cheia dentro da página.
   }
+  if (layoutMode() === 'portrait') closeChat(); // em tela cheia o chat volta a ser opcional
   updateFullscreenButton();
   showFullscreenGestureHint();
 }
@@ -1675,15 +1742,36 @@ els.chatForm.addEventListener('submit', (event) => {
 
 function openChat({ focus = true } = {}) {
   els.chatPanel.classList.add('open');
+  syncChatSideClass();
   clearUnreadChat();
   markVisibleIncomingMessagesRead();
   if (focus) setTimeout(() => els.chatInput.focus(), 120);
 }
 
-function closeChat() { els.chatPanel.classList.remove('open'); }
+function closeChat() {
+  // Em pé e fora da tela cheia, o chat fica sempre visível.
+  if (layoutMode() === 'portrait' && !document.body.classList.contains('cinema-mode')) return;
+  els.chatPanel.classList.remove('open');
+  syncChatSideClass();
+}
 
-els.btnToggleChat.addEventListener('click', openChat);
-els.btnCloseChat.addEventListener('click', () => els.chatPanel.classList.remove('open'));
+els.btnToggleChat.addEventListener('click', () => {
+  if (layoutMode() === 'landscape' && els.chatPanel.classList.contains('open')) closeChat();
+  else openChat({ focus: false });
+});
+els.btnCloseChat.addEventListener('click', closeChat);
+
+// Toque no vídeo (modo deitado) mostra/esconde os controles.
+els.videoWrapper.addEventListener('pointerup', () => {
+  if (layoutMode() !== 'landscape') return;
+  if (document.body.classList.contains('show-controls')) {
+    document.body.classList.remove('show-controls');
+    clearTimeout(controlsTimer);
+  } else pokeControls();
+});
+document.querySelector('.video-controls')?.addEventListener('pointerdown', () => pokeControls(true));
+document.querySelector('.video-controls')?.addEventListener('input', () => pokeControls(true));
+applyLayoutMode();
 
 els.btnClearChatForMe.addEventListener('click', () => {
   if (!confirm('Apagar todas as mensagens somente desta tela? A outra pessoa continuará vendo as mensagens.')) return;

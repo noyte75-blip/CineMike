@@ -1,8 +1,16 @@
-# Encontro de Mike e Lívia — versão 18
+# Encontro de Mike e Lívia — versão 22
 
 Watch Together simples para exatamente duas pessoas, com vídeo sincronizado,
 chat, fotos, GIFs e foto de perfil. O tema visual usa jasmim, lírio, tons de
 rosa, lilás e verde.
+
+## Novidade da V22 — layout de celular
+
+- **Em pé:** a tela fica travada (sem rolar), com o vídeo no topo e o chat embaixo.
+  Com o teclado aberto, o vídeo continua visível no topo e o chat ocupa o resto.
+- **Deitado:** o vídeo ocupa a tela toda; os controles aparecem ao tocar no vídeo.
+  O chat NÃO abre sozinho: toque no botão 💬 para abrir uma faixa ao lado.
+- O botão ⛶ no modo deitado pede a tela cheia do navegador (onde o aparelho permitir).
 
 ## Novidade da V18 — Modo Mike
 

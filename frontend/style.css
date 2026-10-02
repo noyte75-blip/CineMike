@@ -1092,3 +1092,92 @@ body[data-theme="mike"] .landing-card .privacy-note { color: rgba(255,224,239,.6
   body[data-theme="mike"] .control-btn { flex-basis: 42px; width: 42px; height: 42px; }
   body[data-theme="mike"] .main-control { flex-basis: 48px; width: 48px; height: 48px; }
 }
+
+
+/* ===== V22: layout de celular =====
+   O JavaScript define body[data-layout] = portrait | landscape | desktop.
+   --app-h / --app-top acompanham a área realmente visível (com teclado aberto). */
+html:has(body[data-layout="portrait"] #screen-room:not(.hidden)):not(:has(body.cinema-mode)),
+html:has(body[data-layout="landscape"] #screen-room:not(.hidden)) { overflow: hidden; height: 100%; overscroll-behavior: none; }
+body[data-layout="portrait"]:has(#screen-room:not(.hidden)),
+body[data-layout="landscape"]:has(#screen-room:not(.hidden)) { overflow: hidden; overscroll-behavior: none; touch-action: manipulation; }
+
+/* ---------- Em pé: vídeo no topo, chat embaixo, sem rolagem ---------- */
+body[data-layout="portrait"]:not(.cinema-mode) #screen-room:not(.hidden) {
+  position: fixed; left: 0; right: 0; top: var(--app-top, 0px); height: var(--app-h, 100dvh);
+  padding: max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: 6px; overflow: hidden;
+}
+body[data-layout="portrait"]:not(.cinema-mode) .room-header { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin: 0; padding: 5px 8px; border-radius: 16px; flex: 0 0 auto; }
+body[data-layout="portrait"]:not(.cinema-mode) .room-brand, body[data-layout="portrait"]:not(.cinema-mode) .peer-status { display: none; }
+body[data-layout="portrait"]:not(.cinema-mode) .people-strip { grid-row: auto; flex: 1 1 auto; min-width: 0; justify-content: flex-start; margin: 0; }
+body[data-layout="portrait"]:not(.cinema-mode) .room-actions { flex: 1 1 100%; padding: 0; gap: 4px; justify-content: space-between; flex-wrap: nowrap; }
+body[data-layout="portrait"]:not(.cinema-mode) .room-actions .chip-btn { font-size: 10px; padding: 6px 9px; }
+body[data-layout="portrait"]:not(.cinema-mode) .chat-toggle-mobile,
+body[data-layout="portrait"]:not(.cinema-mode) .chat-close-mobile,
+body[data-layout="portrait"]:not(.cinema-mode) .chat-resize-handle,
+body[data-layout="portrait"]:not(.cinema-mode) .chat-kicker,
+body[data-layout="portrait"]:not(.cinema-mode) #btn-pip { display: none; }
+body[data-layout="portrait"]:not(.cinema-mode) .room-main { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; height: auto; gap: 6px; padding: 0; }
+body[data-layout="portrait"]:not(.cinema-mode) .video-column { flex: 0 0 auto; height: auto; }
+body[data-layout="portrait"]:not(.cinema-mode) .video-card { height: auto; min-height: 0; padding: 6px; gap: 5px; border-radius: 16px; }
+body[data-layout="portrait"]:not(.cinema-mode) .video-wrapper { width: 100%; aspect-ratio: 16 / 9; min-height: 0; flex: 0 0 auto; }
+body[data-layout="portrait"]:not(.cinema-mode) .video-controls { flex-wrap: wrap; gap: 4px; align-items: center; }
+body[data-layout="portrait"]:not(.cinema-mode) .control-btn { flex: 0 0 36px; width: 36px; height: 36px; font-size: 13px; }
+body[data-layout="portrait"]:not(.cinema-mode) .main-control { flex-basis: 40px; width: 40px; height: 40px; }
+body[data-layout="portrait"]:not(.cinema-mode) .time-display { order: 2; margin-left: auto; font-size: 11px; }
+body[data-layout="portrait"]:not(.cinema-mode) .seek-bar { order: 3; flex: 1 1 100%; margin: 0; }
+body[data-layout="portrait"]:not(.cinema-mode) .sync-row { margin: 0; font-size: 10px; }
+body[data-layout="portrait"]:not(.cinema-mode) .video-form { grid-template-columns: 82px minmax(0, 1fr) auto; gap: 5px; }
+body[data-layout="portrait"]:not(.cinema-mode) .video-form .secondary-btn { grid-column: auto; min-height: 38px; padding: 0 10px; font-size: 12px; }
+body[data-layout="portrait"]:not(.cinema-mode) .chat-panel {
+  position: relative; inset: auto; transform: none; transition: none; z-index: auto;
+  flex: 1 1 0; min-height: 0; height: auto; max-height: none; border-radius: 16px;
+  display: flex; flex-direction: column;
+}
+/* Teclado aberto: o vídeo continua no topo e o chat ganha o espaço do resto. */
+body[data-layout="portrait"].kb-open .room-header,
+body[data-layout="portrait"].kb-open .sync-row,
+body[data-layout="portrait"].kb-open .video-form:not(:focus-within) { display: none; }
+
+/* ---------- Deitado: vídeo na tela toda, chat opcional ao lado ---------- */
+body[data-layout="landscape"] { --side-w: min(44vw, 330px); }
+body[data-layout="landscape"] #screen-room:not(.hidden) {
+  position: fixed; left: 0; right: 0; top: var(--app-top, 0px); height: var(--app-h, 100dvh);
+  padding: 0; display: block; overflow: hidden; background: #000;
+}
+body[data-layout="landscape"] .room-header { display: contents; }
+body[data-layout="landscape"] .room-header > *:not(.room-actions), body[data-layout="landscape"] .room-actions > *:not(#btn-toggle-chat) { display: none; }
+body[data-layout="landscape"] .room-actions { display: contents; }
+body[data-layout="landscape"] .room-main { position: absolute; inset: 0; display: block; height: auto; min-height: 0; max-width: none; padding: 0; margin: 0; }
+body[data-layout="landscape"].chat-side-open .room-main { right: var(--side-w); }
+body[data-layout="landscape"] .video-column, body[data-layout="landscape"] .video-card {
+  position: relative; height: 100%; padding: 0; border: 0; border-radius: 0; background: #000; box-shadow: none; display: block;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+body[data-layout="landscape"] .video-wrapper { position: absolute; inset: 0; width: auto; height: auto; aspect-ratio: auto; min-height: 0; border: 0; border-radius: 0; }
+body[data-layout="landscape"] .fullscreen-gesture-hint, body[data-layout="landscape"] .sync-row, body[data-layout="landscape"] .video-form { display: none !important; }
+body[data-layout="landscape"] .video-controls {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; margin: 0;
+  padding: 18px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
+  background: linear-gradient(transparent, rgba(0,0,0,.8)); opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+body[data-layout="landscape"].show-controls .video-controls { opacity: 1; pointer-events: auto; }
+body[data-layout="landscape"] .control-btn { width: 38px; height: 38px; flex: 0 0 38px; }
+body[data-layout="landscape"] .time-display { color: #fff; }
+body[data-layout="landscape"] #btn-toggle-chat {
+  position: fixed; z-index: 45; top: calc(var(--app-top, 0px) + 10px); right: max(10px, env(safe-area-inset-right));
+  width: 44px; height: 44px; padding: 0; border-radius: 50%; display: grid; place-items: center; font-size: 0; opacity: .85;
+}
+body[data-layout="landscape"] #btn-toggle-chat::before { content: '💬'; font-size: 20px; }
+body[data-layout="landscape"] #btn-toggle-chat .chat-unread-badge { position: absolute; top: -3px; right: -3px; font-size: 10px; }
+body[data-layout="landscape"].chat-side-open #btn-toggle-chat { right: calc(var(--side-w) + 10px); }
+body[data-layout="landscape"] .chat-panel {
+  display: none; position: fixed; z-index: 40; top: var(--app-top, 0px); right: 0; bottom: auto; left: auto;
+  width: var(--side-w); height: var(--app-h, 100dvh); min-height: 0; max-height: none; transform: none; border-radius: 0;
+  padding-right: env(safe-area-inset-right);
+}
+body[data-layout="landscape"] .chat-panel.open { display: flex; flex-direction: column; }
+body[data-layout="landscape"] .chat-resize-handle { display: none; }
+body[data-layout="landscape"] .chat-close-mobile { display: block; }
+body[data-layout="landscape"] .chat-kicker { display: none; }
