@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: encontro-jasmym-e-livia-backend
+    name: encontro-mike-livia-backend
     runtime: node
     plan: free
     rootDir: backend

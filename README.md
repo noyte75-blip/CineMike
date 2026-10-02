@@ -1,8 +1,31 @@
-# Encontro de Jasmym e Lívia — versão 16.2
+# Encontro de Mike e Lívia — versão 17
 
 Watch Together simples para exatamente duas pessoas, com vídeo sincronizado,
 chat, fotos, GIFs e foto de perfil. O tema visual usa jasmim, lírio, tons de
 rosa, lilás e verde.
+
+## Correção da V17 — revisão geral
+
+- Nome atualizado para **Mike e Lívia** na página, no título da aba e nos
+  arquivos de configuração. As preferências, a foto de perfil e a sala recente
+  salvas pelas versões anteriores são migradas sozinhas para as novas chaves.
+- Todos os arquivos estáticos agora usam a **mesma** versão de cache (`?v=17`).
+  Antes havia `16.3`, `16.4`, `16.5` e `16.7` misturados, o que facilita
+  um aparelho ficar com um arquivo novo e outro antigo (os `.js`/`.css` são
+  guardados por um ano). A cada nova versão, troque o número em `index.html`.
+- Se o servidor reiniciar e a sala não existir mais, o site volta para a tela
+  inicial com uma explicação, em vez de ficar preso em “reconectando…”.
+- A reconexão não abre mais duas tentativas ao mesmo tempo e sair da sala também
+  sai da tela cheia.
+- O backend não grava mais o arquivo da sala (até alguns MB) a cada
+  PLAY/PAUSE/SEEK; o salvamento é agendado e continua acontecendo ao reiniciar.
+- Player MP4/WebM: ouvintes de carregamento são removidos ao terminar.
+- O cabeçalho da sala diz “agora juntos”.
+- `preconnect` apontava para um endereço diferente do `WS_URL`; agora aponta
+  para o mesmo servidor.
+- `config.js` com finais de linha padronizados e comentário de teste local
+  corrigido (`ws://localhost:8080`).
+- `package.json` e `package-lock.json` com o mesmo nome e versão (3.5.0).
 
 ## Novidades da V14
 
@@ -91,7 +114,7 @@ rosa, lilás e verde.
 
 ## Correção de cache
 
-- Todos os arquivos estáticos receberam URLs `?v=16.2`. Assim, após o deploy,
+- Todos os arquivos estáticos receberam URLs `?v=17`. Assim, após o deploy,
   os aparelhos baixam a configuração atual, inclusive a busca de GIFs, sem
   depender de limpar o cache manualmente.
 - Esta correção atualiza frontend e backend para que a confirmação de mensagem
@@ -155,14 +178,14 @@ render.yaml  configuração do backend
 netlify.toml configuração do frontend
 ```
 
-## Atualização da V16.1
+## Como atualizar
 
 Esta atualização troca frontend e backend: o backend confirma a mesma mensagem
 para os dois aparelhos e guarda o estado de visto no histórico da sala.
 
 1. Substitua as pastas `frontend/` e `backend/` no projeto.
 2. Faça o deploy do backend no Render e, depois, o deploy da Netlify.
-3. Abra o site normalmente: os scripts agora terminam em `?v=16.2` e não usam
+3. Abra o site normalmente: os scripts agora terminam em `?v=17` e não usam
    a cópia antiga guardada no navegador.
 4. Pesquise um GIF para confirmar a atualização.
 

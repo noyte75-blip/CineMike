@@ -24,15 +24,28 @@ class Html5Player extends PlayerInterface {
 
   async load(url) {
     return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('O vídeo demorou demais para carregar.')), 15000);
+      let settled = false;
+      const onLoaded = () => finish(resolve);
+      const onError = () => finish(reject, new Error('Esse link de vídeo não pôde ser aberto.'));
+      const timeout = setTimeout(
+        () => finish(reject, new Error('O vídeo demorou demais para carregar.')),
+        15000,
+      );
+      // Remove os dois ouvintes ao terminar. Antes, o que não disparava ficava
+      // pendurado e podia reagir a um erro tardio (por exemplo, ao destruir o
+      // player) depois de a promessa já ter sido resolvida.
       const finish = (callback, value) => {
+        if (settled) return;
+        settled = true;
         clearTimeout(timeout);
+        this.video.removeEventListener('loadedmetadata', onLoaded);
+        this.video.removeEventListener('error', onError);
         callback(value);
       };
+      this.video.addEventListener('loadedmetadata', onLoaded);
+      this.video.addEventListener('error', onError);
       this.video.src = url;
       this.video.load();
-      this.video.addEventListener('loadedmetadata', () => finish(resolve), { once: true });
-      this.video.addEventListener('error', () => finish(reject, new Error('Esse link de vídeo não pôde ser aberto.')), { once: true });
     });
   }
 
@@ -47,5 +60,9 @@ class Html5Player extends PlayerInterface {
     this.video.playbackRate = Math.max(0.9, Math.min(1.1, rate));
     return true;
   }
-  destroy() { this.video.pause(); this.video.src = ''; }
+  destroy() {
+    this.video.pause();
+    this.video.removeAttribute('src');
+    this.video.load();
+  }
 }

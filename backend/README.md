@@ -1,8 +1,8 @@
-# Backend v16.1
+# Backend v17
 
-Servidor WebSocket autoritativo do “Encontro de Jasmym e Lívia”. Mantém salas
+Servidor WebSocket autoritativo do “Encontro de Mike e Lívia”. Mantém salas
 para no máximo duas pessoas, sincroniza a linha do tempo e confirma chat,
-fotos, GIFs, respostas e avatar para as duas telas. A V16.1 mantém o histórico
+fotos, GIFs, respostas e avatar para as duas telas. A V17 mantém o histórico
 da sala em arquivo e registra quando a outra pessoa viu uma mensagem, sem
 alterar a autoridade do relógio do vídeo.
 
@@ -25,7 +25,7 @@ Variáveis opcionais:
   `backend/data`.
 - `ALLOWED_ORIGINS`: origens permitidas separadas por vírgula.
 
-O endpoint `/health` deve responder com `"protocolVersion":15`.
+O endpoint `/health` deve responder com `"protocolVersion":17`.
 
 ## Regra principal
 

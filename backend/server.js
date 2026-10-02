@@ -716,8 +716,7 @@ function handleRoomMessage(ws, msg) {
     stored.readBy = normalizeReadBy(stored.readBy);
     if (!stored.readBy.includes(participant.id)) {
       stored.readBy.push(participant.id);
-      touch(room);
-      persistRooms();
+      touch(room); // agenda o salvamento sem bloquear o servidor
     }
     const sender = room.participants.get(stored.participantId);
     return send(sender?.ws, {
@@ -757,7 +756,8 @@ function handleRoomMessage(ws, msg) {
     });
   }
   if (!commitVideoCommand(room, msg)) return fail(ws, 'INVALID_ACTION', 'A ação de vídeo é inválida.');
-  persistRooms();
+  // Sem persistRooms() aqui: a gravação é síncrona e pode ter vários MB de
+  // histórico. touch() (dentro de commitVideoCommand) já agenda o salvamento.
 
   const snapshot = projectedVideoState(room);
   rememberCommand(room, commandId);
@@ -814,7 +814,7 @@ const server = http.createServer((req, res) => {
     });
     return res.end(JSON.stringify({
       ok: true,
-      service: 'encontro-jasmym-livia-backend',
+      service: 'encontro-mike-livia-backend',
       protocolVersion: PROTOCOL_VERSION,
       rooms: rooms.size,
     }));

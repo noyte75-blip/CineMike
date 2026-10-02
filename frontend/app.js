@@ -132,10 +132,32 @@ const state = {
   audioContext: null,
 };
 
-const SESSION_STORAGE_KEY = 'encontro-jasmym-sessions-v1';
-const PROFILE_STORAGE_KEY = 'encontro-jasmym-profile-v1';
-const UI_STORAGE_KEY = 'encontro-jasmym-ui-v16-2';
-const HIDDEN_CHAT_STORAGE_KEY = 'encontro-jasmym-hidden-chat-v14';
+const SESSION_STORAGE_KEY = 'encontro-mike-sessions-v1';
+const PROFILE_STORAGE_KEY = 'encontro-mike-profile-v1';
+const UI_STORAGE_KEY = 'encontro-mike-ui-v17';
+const HIDDEN_CHAT_STORAGE_KEY = 'encontro-mike-hidden-chat-v14';
+
+// Copia os dados gravados pelas versões anteriores (chaves com o nome antigo)
+// para as chaves novas, uma única vez, para ninguém perder foto de perfil,
+// preferências ou a sala recente ao atualizar.
+(function migrateLegacyStorage() {
+  const legacy = {
+    'encontro-jasmym-sessions-v1': SESSION_STORAGE_KEY,
+    'encontro-jasmym-profile-v1': PROFILE_STORAGE_KEY,
+    'encontro-jasmym-ui-v16-2': UI_STORAGE_KEY,
+    'encontro-jasmym-hidden-chat-v14': HIDDEN_CHAT_STORAGE_KEY,
+  };
+  try {
+    for (const [oldKey, newKey] of Object.entries(legacy)) {
+      const oldValue = localStorage.getItem(oldKey);
+      if (oldValue === null) continue;
+      if (localStorage.getItem(newKey) === null) localStorage.setItem(newKey, oldValue);
+      localStorage.removeItem(oldKey);
+    }
+  } catch {
+    // Sem acesso ao armazenamento: o app funciona normalmente, só sem migrar.
+  }
+})();
 const PROTOCOL_VERSION = 17;
 const DEFAULT_VIDEO_PLACEHOLDER_HTML = els.videoPlaceholder.innerHTML;
 
@@ -164,7 +186,7 @@ function applyNeutralMode() {
     if (!element.dataset.defaultHtml) element.dataset.defaultHtml = element.innerHTML;
     element.innerHTML = state.neutralMode ? element.dataset.neutral : element.dataset.defaultHtml;
   });
-  document.title = state.neutralMode ? 'Sala de filmes' : 'Encontro de Jasmym e Lívia';
+  document.title = state.neutralMode ? 'Sala de filmes' : 'Encontro de Mike e Lívia';
   if (els.btnNeutralMode) {
     els.btnNeutralMode.classList.toggle('active', state.theme !== 'encontro');
     els.btnNeutralMode.textContent = '⚙ configurações';
@@ -368,10 +390,12 @@ function showLandingError(message) {
 
 function hideLandingError() { els.landingError.classList.add('hidden'); }
 
+let chatErrorTimer = null;
 function showChatError(message) {
   els.chatError.textContent = message;
   els.chatError.classList.remove('hidden');
-  setTimeout(() => els.chatError.classList.add('hidden'), 3500);
+  clearTimeout(chatErrorTimer);
+  chatErrorTimer = setTimeout(() => els.chatError.classList.add('hidden'), 3500);
 }
 
 function escapeHtml(value) {
@@ -665,11 +689,20 @@ function attachRoomListeners(client) {
   });
   client.on('ROOM_FULL', ({ message }) => {
     if (!activeClient()) return;
+    const wasInRoom = Boolean(state.roomCode);
+    if (wasInRoom) leaveCurrentRoom();
     setLandingBusy(null, false);
     showLandingError(message || 'Essa sala já tem duas pessoas.');
   });
-  client.on('ERROR', ({ message, messageId }) => {
+  client.on('ERROR', ({ code, message, messageId }) => {
     if (!activeClient()) return;
+    // Ao reconectar, se o servidor reiniciou e a sala já não existe, não há o
+    // que tentar de novo: voltamos para a tela inicial com uma explicação.
+    if (code === 'ROOM_NOT_FOUND' && state.roomCode) {
+      leaveCurrentRoom();
+      showLandingError('Essa sala não existe mais (o servidor pode ter reiniciado). Crie uma nova sala.');
+      return;
+    }
     if (messageId) markChatMessageFailed(messageId);
     if (!state.roomCode) setLandingBusy(null, false);
     if (state.roomCode) showChatError(message || 'Algo deu errado.');
@@ -846,11 +879,19 @@ function scheduleReconnect() {
   state.reconnectTimer = setTimeout(reconnectRoom, delay);
 }
 
+let reconnectInFlight = false;
+
 async function reconnectRoom() {
-  if (!state.roomCode || state.closing) return;
+  if (!state.roomCode || state.closing || reconnectInFlight) return;
+  if (state.wsClient?.isOpen()) return;
+  reconnectInFlight = true;
   try {
     const client = new WebSocketClient(CONFIG.WS_URL);
     await client.connect();
+    if (!state.roomCode || state.closing) {
+      client.disconnect();
+      return;
+    }
     state.wsClient = client;
     attachRoomListeners(client);
     client.send({
@@ -864,6 +905,8 @@ async function reconnectRoom() {
     });
   } catch {
     scheduleReconnect();
+  } finally {
+    reconnectInFlight = false;
   }
 }
 
@@ -1210,6 +1253,7 @@ function removeRoomFromAddress() {
 
 function leaveCurrentRoom() {
   if (!state.roomCode) return;
+  if (fullscreenIsActive()) exitFullscreenView();
   const previousName = state.myName;
   const client = state.wsClient;
   const roomCode = state.roomCode;

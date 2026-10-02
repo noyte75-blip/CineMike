@@ -41,7 +41,7 @@ class SyncController {
     this.wsClient.send({
       type,
       ...fields,
-      protocolVersion: 16,
+      protocolVersion: 17,
       intent: 'user-control',
       commandId: this._commandId(),
     });
