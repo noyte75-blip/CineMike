@@ -935,14 +935,25 @@ body[data-theme="mike"] .sync-row { color: #ffd1e6; font-size: 14px; justify-con
 body[data-theme="mike"] .sync-dot, body[data-theme="mike"] .sync-dot.ok { background: #6dff7b; box-shadow: 0 0 8px rgba(109,255,123,.7); }
 
 /* chat */
-body[data-theme="mike"] .chat-panel { overflow: hidden; border-radius: 26px; background: #12051c url('livia-peek.webp') right -46px bottom -34px / 300px auto no-repeat; }
+body[data-theme="mike"] .chat-panel {
+  overflow: hidden;
+  border-radius: 26px;
+  background-color: #12051c;
+  background-image:
+    linear-gradient(90deg, rgba(18,5,28,.98) 0%, rgba(18,5,28,.78) 30%, rgba(18,5,28,.12) 70%, rgba(18,5,28,0) 100%),
+    url('livia-peek.webp');
+  background-repeat: no-repeat;
+  background-position: center, right -18px bottom -42px;
+  background-size: cover, auto 56%;
+  background-blend-mode: normal;
+}
 body[data-theme="mike"] .chat-header { position: relative; background: linear-gradient(120deg, rgba(42,18,48,.95), rgba(36,16,51,.9)); border-bottom: 0; padding: 16px 20px 14px; }
 body[data-theme="mike"] .chat-header::after { content: ''; position: absolute; left: 16px; right: 16px; bottom: 0; height: 4px; border-radius: 4px; background: var(--mike-pink); filter: url(#mike-rough); }
 body[data-theme="mike"] .chat-header strong { font: 700 31px/1 var(--font-display); text-decoration: underline; text-decoration-color: #fff0f7; text-decoration-thickness: 2.5px; text-underline-offset: 6px; }
 body[data-theme="mike"] .chat-kicker { font-size: 15px; }
 body[data-theme="mike"] .chat-icon-btn { color: #fff; font-size: 22px; background: transparent; }
-body[data-theme="mike"] .chat-messages { background: transparent; scrollbar-color: var(--mike-pink) transparent; }
-body[data-theme="mike"] .chat-welcome { color: #ffd1e6; }
+body[data-theme="mike"] .chat-messages { background: linear-gradient(180deg, rgba(18,5,28,.18), rgba(18,5,28,.04)); scrollbar-color: var(--mike-pink) transparent; position: relative; z-index: 1; }
+body[data-theme="mike"] .chat-welcome { color: #ffd1e6; position: relative; z-index: 2; }
 body[data-theme="mike"] .chat-welcome p { font-size: 16px; }
 body[data-theme="mike"] .chat-bubble { background: #1f0c2b; border: 2px solid rgba(255,46,136,.6); color: #fff0f7; font-size: 16px; box-shadow: none; }
 body[data-theme="mike"] .mine .chat-bubble { background: linear-gradient(135deg, #7b2dd6, #c0268a); border-color: #ff6fb0; }
@@ -1069,7 +1080,15 @@ body[data-theme="mike"] .landing-card .privacy-note { color: rgba(255,224,239,.6
   body[data-theme="mike"] .room-brand h1 { font-size: 21px; }
   body[data-theme="mike"] .room-main { height: auto; padding-left: 0; display: block; }
   body[data-theme="mike"] .room-actions { padding: 7px 10px; }
-  body[data-theme="mike"] .chat-panel { background-size: 230px auto; background-position: right -36px bottom -44px; }
+  body[data-theme="mike"] .chat-panel {
+    background-position: center, right -10px bottom -28px;
+    background-size: cover, auto 43%;
+    border-radius: 22px;
+  }
+  body[data-theme="mike"] .chat-welcome { padding-left: 16px; padding-right: 16px; }
+  body[data-theme="mike"] .chat-bubble { max-width: 84%; }
+  body[data-theme="mike"] .chat-form { position: relative; z-index: 3; background: linear-gradient(180deg, rgba(18,5,28,.04), rgba(18,5,28,.72)); }
+
   body[data-theme="mike"] .control-btn { flex-basis: 42px; width: 42px; height: 42px; }
   body[data-theme="mike"] .main-control { flex-basis: 48px; width: 48px; height: 48px; }
 }
