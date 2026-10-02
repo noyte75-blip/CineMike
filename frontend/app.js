@@ -116,7 +116,7 @@ const state = {
   pendingMediaName: '',
   soloMode: false,
   neutralMode: false,
-  theme: 'encontro',
+  theme: 'mike',
   replyTo: null,
   notificationsEnabled: false,
   unreadChatCount: 0,
@@ -342,7 +342,7 @@ function saveHiddenMessagesForRoom() {
 }
 
 const savedUiPreferences = readJson(UI_STORAGE_KEY, {});
-state.theme = savedUiPreferences.theme || (savedUiPreferences.neutralMode ? 'neutral' : 'encontro');
+state.theme = savedUiPreferences.theme || (savedUiPreferences.neutralMode ? 'neutral' : 'mike');
 state.notificationsEnabled = Boolean(savedUiPreferences.notificationsEnabled);
 applyNeutralMode();
 updateNotificationButton();

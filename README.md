@@ -1,15 +1,24 @@
-# Encontro de Mike e Lívia — versão 17
+# Encontro de Mike e Lívia — versão 18
 
 Watch Together simples para exatamente duas pessoas, com vídeo sincronizado,
 chat, fotos, GIFs e foto de perfil. O tema visual usa jasmim, lírio, tons de
 rosa, lilás e verde.
+
+## Novidade da V18 — Modo Mike
+
+- Novo visual **Modo Mike** (preto, rosa choque e roxo, letra de marcador), que
+  vira o padrão de quem ainda não escolheu um visual. Dá para trocar em
+  ⚙ configurações → Visual desta tela.
+- A tela de entrada mostra a arte do CineMike e o cabeçalho da sala mostra o logo.
+- Os outros visuais (Encontro, Neutro, Escuro e Terror) continuam iguais.
+- Todos os arquivos passam a usar `?v=18`.
 
 ## Correção da V17 — revisão geral
 
 - Nome atualizado para **Mike e Lívia** na página, no título da aba e nos
   arquivos de configuração. As preferências, a foto de perfil e a sala recente
   salvas pelas versões anteriores são migradas sozinhas para as novas chaves.
-- Todos os arquivos estáticos agora usam a **mesma** versão de cache (`?v=17`).
+- Todos os arquivos estáticos agora usam a **mesma** versão de cache (`?v=18`).
   Antes havia `16.3`, `16.4`, `16.5` e `16.7` misturados, o que facilita
   um aparelho ficar com um arquivo novo e outro antigo (os `.js`/`.css` são
   guardados por um ano). A cada nova versão, troque o número em `index.html`.
@@ -114,7 +123,7 @@ rosa, lilás e verde.
 
 ## Correção de cache
 
-- Todos os arquivos estáticos receberam URLs `?v=17`. Assim, após o deploy,
+- Todos os arquivos estáticos receberam URLs `?v=18`. Assim, após o deploy,
   os aparelhos baixam a configuração atual, inclusive a busca de GIFs, sem
   depender de limpar o cache manualmente.
 - Esta correção atualiza frontend e backend para que a confirmação de mensagem
@@ -185,7 +194,7 @@ para os dois aparelhos e guarda o estado de visto no histórico da sala.
 
 1. Substitua as pastas `frontend/` e `backend/` no projeto.
 2. Faça o deploy do backend no Render e, depois, o deploy da Netlify.
-3. Abra o site normalmente: os scripts agora terminam em `?v=17` e não usam
+3. Abra o site normalmente: os scripts agora terminam em `?v=18` e não usam
    a cópia antiga guardada no navegador.
 4. Pesquise um GIF para confirmar a atualização.
 

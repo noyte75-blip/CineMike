@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+<defs><filter id="r" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7"/></filter></defs>
+<rect width="1000" height="600" fill="#0d0610"/>
+<g filter="url(#r)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<g transform="translate(840 150) rotate(12)" stroke="#8a1238" stroke-width="12" opacity=".9">
+<path d="M0-120L35-38 122-30 56 28 76 114 0 70-76 114-56 28-122-30-35-38Z"/>
+<path d="M4-104L32-30 106-24 50 22 66 98 2 60-62 98-46 24-106-24-30-32Z" stroke-width="6" opacity=".7"/></g>
+<g transform="translate(150 260) scale(.9) rotate(-8)" stroke="#6a2fb0" stroke-width="10" fill="#2a1250" opacity=".95">
+<path d="M0-18C-40-78-100-20 0 76 100-20 40-78 0-18Z"/></g>
+<g transform="translate(930 520) scale(.75) rotate(8)" stroke="#ff2e88" stroke-width="13" opacity=".95">
+<path d="M0-18C-40-78-100-20 0 76 100-20 40-78 0-18Z"/></g>
+<g transform="translate(190 430) rotate(-15)" stroke="#8a1238" stroke-width="9" opacity=".85">
+<path d="M0-48L13-15 48-12 22 11 30 46 0 28-30 46-22 11-48-12-13-15Z"/></g>
+<g transform="translate(640 60) scale(.6)" stroke="#5a2a9a" stroke-width="10" opacity=".8">
+<path d="M0-48L13-15 48-12 22 11 30 46 0 28-30 46-22 11-48-12-13-15Z"/></g>
+<path d="M60 70 C120 40 160 90 230 60" stroke="#ff2e88" stroke-width="7" opacity=".35"/>
+<path d="M700 540 C760 510 820 560 880 530" stroke="#7b2dd6" stroke-width="7" opacity=".45"/>
+</g></svg>
